@@ -2,8 +2,13 @@ const {itemsModel} = require('../Models/items');
 
 class ItemController {
     static async upsert(req,res) {
-        if(req.params.quantity !== undefined && req.params.name !== undefined ) {
-            const result = await itemsModel.upsert(req.params)
+        
+        if(req.query.quantity !== undefined && req.query.name !== undefined ) {
+            const result = await itemsModel.upsert(req.query)
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            res.setHeader('Access-Control-Allow-Credentials', true);
             switch(result.ok) {
                 case true:
                     res.status(200).send({message:'success',result:result,status:200});
@@ -36,6 +41,10 @@ class ItemController {
 
     static delete(req,res) {
         if(req.body.name !== undefined) {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            res.setHeader('Access-Control-Allow-Credentials', true);    
             itemsModel.items.deleteOne({name:req.body.name})
             .then((result) => {
                 res.status(200).send({message:'success',result:result,status:200});

@@ -7,7 +7,7 @@ function exposeApi(app,express) {
     app.post('/api/delete/item', 
     (req,res) => ItemController.delete(req,res));
     
-    app.get('/api/upsert-items/:name?/:quantity?',
+    app.get('/api/upsert-items/?',
     (req,res) => ItemController.upsert(req,res));
     
     app.get('/api/get-all-items/',
