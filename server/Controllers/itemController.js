@@ -44,9 +44,8 @@ class ItemController {
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
         res.setHeader('Access-Control-Allow-Credentials', true);
-        return res.send(req.body);
-        if(req.body.id !== undefined) {
-            itemsModel.items.deleteOne({_id:req.body.id})
+        if(JSON.parse(Object.keys(req.body)).id !== undefined) {
+            itemsModel.items.deleteOne({_id:JSON.parse(Object.keys(req.body)).id})
             .then((result) => {
                 return res.status(200).send({message:'success',result:result,status:200});
             }).catch((err) => {

@@ -53,6 +53,7 @@ const Main = () => {
     const result = await api.post('/api/delete/item',data);
     console.log(result.data);
     if(result.ok) {
+      handleClose();
       setOpenSnack(true);
       setIsSuccess('success');
       setMessage('Deleted Successfully');
