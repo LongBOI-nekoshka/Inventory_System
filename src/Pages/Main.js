@@ -13,8 +13,11 @@ import { Grid,
   CardContent,
   TextField,
   Button,
+  Popover,
+  Snackbar,
+  Alert,
 } from '@mui/material';
-import {RemoveRedEye,Delete,Create, Search} from '@mui/icons-material';
+import {RemoveRedEye,Delete,Create, Search, CheckCircle, Cancel} from '@mui/icons-material';
 import {useEffect, useMemo, useState} from 'react';
 import api from './config/apisauce';
 import { NavLink } from "react-router-dom";
@@ -25,7 +28,11 @@ const Main = () => {
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
-
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [itemId, setItemId] = useState(''); 
+  const [openSnack, setOpenSnack] = useState(false);
+  const [isSuccess, setIsSuccess] = useState('');
+  const [message, setMessage] = useState('');
   const searchThis = useMemo(() => {
     let searchable = Object.keys(items).filter((key,index) => {
       return items[key]['name'].toLowerCase().includes(search.toLowerCase());
@@ -37,7 +44,29 @@ const Main = () => {
       });
     }
     return items;
-  },[search,items])
+  },[search,items]);
+
+  const deleteThis = async () => {
+    let data = {
+      id:itemId
+    };
+    const result = await api.post('/api/delete/item',data);
+    console.log(result.data);
+    if(result.ok) {
+      setOpenSnack(true);
+      setIsSuccess('success');
+      setMessage('Deleted Successfully');
+      getItems();
+    }else {
+      setOpenSnack(true);
+      setIsSuccess('error');
+      setMessage('Something went wrong');
+    }
+  };
+
+  const handleCloseSnack = () => {
+    setOpenSnack(false);
+  };
 
   const getItems = async () => {
     const result = await api.get('/api/get-all-items');
@@ -47,6 +76,18 @@ const Main = () => {
   const onClose = () => {
     setOpen(false);
   };
+
+  const handleClick = (event,id) => {
+    setItemId(id);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openThis = Boolean(anchorEl);
+  const id = openThis ? 'simple-popover' : undefined;
 
   useEffect(() => {
     getItems();
@@ -121,7 +162,7 @@ const Main = () => {
                             </IconButton>
                           </Grid>
                           <Grid item>
-                            <IconButton size='small'>
+                            <IconButton size='small' onClick={(event)=>handleClick(event,searchThis[key]['_id'])} >
                               <Delete fontSize='small'/>
                             </IconButton>
                           </Grid>
@@ -140,6 +181,37 @@ const Main = () => {
             </Table>
           </TableContainer>
       </Grid>
+      <Popover
+        id={id}
+        open={openThis}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Grid container p={2}>
+          <Grid>
+            <Typography variant='caption'>Delete This Item</Typography>
+          </Grid>
+          <Grid item>
+            <IconButton size='small' onClick={deleteThis}>
+              <CheckCircle fontSize='small'/>
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <IconButton size='small'>
+              <Cancel fontSize='small' onClick={handleClose}/>
+            </IconButton>
+          </Grid>
+        </Grid>
+      </Popover>
+      <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+        <Alert severity={isSuccess}>
+          {message}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

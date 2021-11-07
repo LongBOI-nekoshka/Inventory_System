@@ -40,19 +40,20 @@ class ItemController {
     
 
     static delete(req,res) {
-        if(req.body.name !== undefined) {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-            res.setHeader('Access-Control-Allow-Credentials', true);    
-            itemsModel.items.deleteOne({name:req.body.name})
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        return res.send(req.body);
+        if(req.body.id !== undefined) {
+            itemsModel.items.deleteOne({_id:req.body.id})
             .then((result) => {
-                res.status(200).send({message:'success',result:result,status:200});
+                return res.status(200).send({message:'success',result:result,status:200});
             }).catch((err) => {
-                res.status(500).send({message:'something went wrong',status:500});
+                return res.status(500).send({message:'something went wrong',status:500});
             });
         }else {
-            res.status(404).send({message:'Empty name',status:404});
+            return res.status(404).send({message:'Empty id',status:404});
         }
     }
 };
