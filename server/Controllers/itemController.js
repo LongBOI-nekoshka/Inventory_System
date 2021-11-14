@@ -1,14 +1,26 @@
 const {itemsModel} = require('../Models/items');
+const {historyModel} = require('../Models/history');
 
 class ItemController {
     static async upsert(req,res) {
-        
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        res.setHeader('Access-Control-Allow-Credentials', true);
+
         if(req.query.quantity !== undefined && req.query.name !== undefined ) {
-            const result = await itemsModel.upsert(req.query)
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-            res.setHeader('Access-Control-Allow-Credentials', true);
+            if(req.query.id === '') {
+                await historyModel.history.create({'item':req.query,'action':'added'});
+            }else {
+                req.query.preval = await itemsModel.items.findById(req.query.id).exec();
+                if(req.query.quantity == req.query.preval.Quantity && req.query.name == req.query.preval.name) {
+                    res.status(200).send({message:'Nothing changed',result:[],status:200});
+                    return;
+                }
+                await historyModel.history.create({'item':req.query,'action':'updated'});
+            }
+
+            const result = await itemsModel.upsert(req.query);
             switch(result.ok) {
                 case true:
                     res.status(200).send({message:'success',result:result,status:200});
@@ -45,6 +57,7 @@ class ItemController {
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
         res.setHeader('Access-Control-Allow-Credentials', true);
         if(JSON.parse(Object.keys(req.body)).id !== undefined) {
+            historyModel.history.create({'item':itemsModel.items.findById(JSON.parse(Object.keys(req.body)).id).exec(),'action':'deleted'});
             itemsModel.items.deleteOne({_id:JSON.parse(Object.keys(req.body)).id})
             .then((result) => {
                 return res.status(200).send({message:'success',result:result,status:200});

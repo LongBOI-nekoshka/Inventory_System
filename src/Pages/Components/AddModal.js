@@ -1,28 +1,30 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, TextField } from '@mui/material';
 import apisauce from '../config/apisauce';
 
 const AddModal = (props) => {
-  const { onClose, open, setItems } = props;
+  const { id, editMode, data, onClose, open, setItems } = props;
   const [name,setName] = useState('');
   const [quantity,setQuantity] = useState(0);
   const [message,setMessage] = useState('');
   const [openSnack,setSnack] = useState(false);
-  const [isSuccess,setIsSuccess] = useState('');
+  const [isSuccess,setIsSuccess] = useState('error');
 
   const save = async () => {
     let data= {
       name:name,
       quantity:quantity,
-      id:'',
+      id: editMode ? id : '',
     };
-    const result = await apisauce.get('/api/upsert-items/',data);
+    var result = await apisauce.get('/api/upsert-items/',data);
     if(result.ok) {
       setMessage('Added Successfully')
       setIsSuccess('success');
       setSnack(true);
-      setName('');
-      setQuantity(0);
+      if(!editMode) {
+        setName('');
+        setQuantity(0);
+      }
       const result = await apisauce.get('/api/get-all-items');
       setItems(result.data)
     }else {
@@ -36,11 +38,21 @@ const AddModal = (props) => {
     setSnack(false);
   };
 
+  useEffect(()=> {
+    if(editMode) {
+      setName(data['name'])
+      setQuantity(data['Quantity'])
+    }else {
+      setName('');
+      setQuantity('');
+    }
+  },[data])
+
   return (
     <Dialog onClose={onClose} open={open}>
       <DialogContent>
         <DialogTitle>
-          Add Item
+          {editMode ? 'Edit' : 'Add'} Item
         </DialogTitle>
         <Grid container spacing={2}>
           <Grid item>

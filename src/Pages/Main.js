@@ -31,8 +31,10 @@ const Main = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [itemId, setItemId] = useState(''); 
   const [openSnack, setOpenSnack] = useState(false);
-  const [isSuccess, setIsSuccess] = useState('');
+  const [isSuccess, setIsSuccess] = useState('error');
   const [message, setMessage] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState([]);
   const searchThis = useMemo(() => {
     let searchable = Object.keys(items).filter((key,index) => {
       return items[key]['name'].toLowerCase().includes(search.toLowerCase());
@@ -45,6 +47,7 @@ const Main = () => {
     }
     return items;
   },[search,items]);
+
 
   const deleteThis = async () => {
     let data = {
@@ -65,8 +68,16 @@ const Main = () => {
     }
   };
 
+  const openEdit = (data) => {
+    setEditMode(true);
+    setOpen(true);
+    setItemId(data['_id']);
+    setEditData(data);
+  };
+
   const handleCloseSnack = () => {
-    setOpenSnack(false);
+    setOpenSnack(true);
+    
   };
 
   const getItems = async () => {
@@ -75,6 +86,9 @@ const Main = () => {
   };
 
   const onClose = () => {
+    setItemId('')
+    setEditMode(false);
+    setEditData([]);
     setOpen(false);
   };
 
@@ -102,7 +116,7 @@ const Main = () => {
       spacing={2}
       style={{marginTop:90}}
      >
-      <AddModal open={open} onClose={onClose} setItems={setItems}/>
+      <AddModal id={itemId} data={editData} editMode={editMode} open={open} onClose={onClose} setItems={setItems}/>
       <Grid item>
         <Box sx={{ minWidth: 200 }}>
           <Card>
@@ -148,7 +162,7 @@ const Main = () => {
               {
                 Object.keys(searchThis).map((key,index) => {
                   return (
-                    <TableRow>
+                    <TableRow key={index}>
                       <TableCell align="left">
                         {searchThis[key]['name']}
                       </TableCell>
@@ -158,17 +172,12 @@ const Main = () => {
                       <TableCell align="center">
                         <Grid container alignItems="center" justifyContent='center'>
                           <Grid item>
-                            <IconButton size='small'>
-                              <RemoveRedEye fontSize='small'/>
-                            </IconButton>
-                          </Grid>
-                          <Grid item>
                             <IconButton size='small' onClick={(event)=>handleClick(event,searchThis[key]['_id'])} >
                               <Delete fontSize='small'/>
                             </IconButton>
                           </Grid>
                           <Grid item>
-                            <IconButton size='small'>
+                            <IconButton size='small' onClick={()=>openEdit(searchThis[key])}>
                               <Create fontSize='small'/>
                             </IconButton>
                           </Grid>
