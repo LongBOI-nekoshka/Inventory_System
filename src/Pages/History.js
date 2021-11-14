@@ -48,6 +48,7 @@ const History = () => {
       justifyContent='center'
       alignItems="flex-start"
       style={{marginTop:90}}
+      spacing={2}
     >
       <Grid item container justifyContent='space-between'
       alignItems="flex-start"direction='column' xs={2} >
@@ -58,15 +59,22 @@ const History = () => {
             InputProps={{
               endAdornment: <Search/>,
             }}
-            style={{position:'fixed',width:220,top:120}}
             onChange={(event)=>setSearch(event.target.value)}
           />
         </Grid>
         <Grid item>
-        <NavLink to='/inventory'>Inventory</NavLink>
+        <NavLink to='/'>Inventory</NavLink>
         </Grid>
       </Grid>
-      <Grid item container justifyContent='center' alignItems='center' spacing={2} xs={6}>
+      <Grid item container 
+        justifyContent='center' alignItems='center' 
+        spacing={2} xs={6}
+        style={{
+          overflowY:'scroll',
+          overflowX: 'hidden', 
+          height:600,
+        }}
+      >
       {
         searchThis.map((index) => {
           return (
