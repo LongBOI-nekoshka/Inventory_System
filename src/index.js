@@ -10,8 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="/inventory" element={<Main />} />
+      <Route path="/" element={<Main />} />
       <Route path="/history" element={<History />} />
     </Routes>
   </BrowserRouter>,
