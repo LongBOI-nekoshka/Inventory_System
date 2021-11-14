@@ -19,7 +19,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "npm run start-client && cd server && npm run start",
+    "start": "npm run start-client",
     "start-client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

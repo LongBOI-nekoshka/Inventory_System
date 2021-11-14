@@ -1,5 +1,4 @@
 import { Grid, 
-  // Typography,
   Table,
   TableBody,
   TableCell,
@@ -17,7 +16,7 @@ import { Grid,
   Snackbar,
   Alert,
 } from '@mui/material';
-import {RemoveRedEye,Delete,Create, Search, CheckCircle, Cancel} from '@mui/icons-material';
+import {Delete,Create, Search, CheckCircle, Cancel} from '@mui/icons-material';
 import {useEffect, useMemo, useState} from 'react';
 import api from './config/apisauce';
 import { NavLink } from "react-router-dom";
@@ -41,7 +40,6 @@ const Main = () => {
     })
     if(search !== '') {
       return searchable.map((element) => {
-        console.log(items[element]);
         return items[element];
       });
     }
@@ -76,8 +74,7 @@ const Main = () => {
   };
 
   const handleCloseSnack = () => {
-    setOpenSnack(true);
-    
+    setOpenSnack(false);
   };
 
   const getItems = async () => {

@@ -44,7 +44,7 @@ const AddModal = (props) => {
       setQuantity(data['Quantity'])
     }else {
       setName('');
-      setQuantity('');
+      setQuantity(0);
     }
   },[data])
 
